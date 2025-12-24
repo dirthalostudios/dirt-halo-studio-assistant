@@ -1,0 +1,389 @@
+:root {
+  color-scheme: dark;
+  --dh-bg: #050008;
+  --dh-bg-alt: #0b0414;
+  --dh-panel: #080510;
+  --dh-border: #3c234f;
+  --dh-accent: #ff2fd0;
+  --dh-accent-soft: rgba(255, 47, 208, 0.2);
+  --dh-accent-alt: #41e1ff;
+  --dh-text: #f5f3ff;
+  --dh-text-soft: #b4a6d6;
+  --dh-user: #161b2b;
+  --dh-assistant: #12061c;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    sans-serif;
+  background:
+    radial-gradient(circle at top left, #2b0036 0, transparent 55%),
+    radial-gradient(circle at bottom right, #001f36 0, transparent 55%),
+    var(--dh-bg);
+  color: var(--dh-text);
+}
+
+/* Center the app */
+.dh-root {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* Main card */
+.dh-card {
+  width: 100%;
+  max-width: 920px;
+  background: radial-gradient(circle at top, #13001f 0, #050008 60%);
+  border-radius: 18px;
+  border: 1px solid var(--dh-border);
+  box-shadow:
+    0 0 40px rgba(0, 0, 0, 0.9),
+    0 0 45px var(--dh-accent-soft);
+  padding: 20px 22px 18px;
+}
+
+/* Header */
+.dh-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.dh-logo-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 20%, #ffffff 0, #ff9bf3 25%, #ff2fd0 60%, #3c003d 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 18px;
+  color: #050008;
+  box-shadow: 0 0 22px rgba(255, 47, 208, 0.6);
+}
+
+.dh-header-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.dh-header-sub {
+  font-size: 13px;
+  color: var(--dh-text-soft);
+}
+
+/* Mode row */
+.dh-mode-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 14px;
+}
+
+.dh-mode-label {
+  font-size: 12px;
+  color: var(--dh-text-soft);
+}
+
+.dh-modes {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dh-mode-button {
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid #3a2848;
+  background: rgba(5, 0, 15, 0.8);
+  color: var(--dh-text-soft);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.15s ease-out;
+}
+
+.dh-mode-button:hover {
+  border-color: var(--dh-accent-alt);
+  color: var(--dh-text);
+}
+
+.dh-mode-button--active {
+  background: linear-gradient(135deg, var(--dh-accent), var(--dh-accent-alt));
+  color: #050008;
+  border-color: transparent;
+  box-shadow: 0 0 18px rgba(255, 47, 208, 0.6);
+}
+
+/* Chat window */
+.dh-chat-window {
+  border-radius: 14px;
+  border: 1px solid #281937;
+  background: radial-gradient(circle at top left, #170521 0, #06020a 60%);
+  height: 420px;
+  overflow-y: auto;
+  padding: 12px 12px 10px;
+  margin-bottom: 12px;
+}
+
+/* Messages */
+.dh-message {
+  margin-bottom: 9px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.dh-message-label {
+  display: inline-block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 2px;
+}
+
+.dh-message-label--user {
+  color: var(--dh-accent-alt);
+}
+
+.dh-message-label--assistant {
+  color: var(--dh-accent);
+}
+
+.dh-bubble {
+  display: inline-block;
+  padding: 7px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  max-width: 100%;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.dh-bubble--user {
+  background: linear-gradient(135deg, var(--dh-user), #080b20);
+}
+
+.dh-bubble--assistant {
+  background: linear-gradient(135deg, var(--dh-assistant), #24042f);
+}
+
+/* Input row */
+.dh-input-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.dh-input {
+  flex: 1;
+  padding: 9px 10px;
+  border-radius: 999px;
+  border: 1px solid #31203f;
+  background: rgba(4, 1, 10, 0.9);
+  color: var(--dh-text);
+  font-size: 13px;
+  outline: none;
+}
+
+.dh-input::placeholder {
+  color: #6b5a89;
+}
+
+.dh-input:focus {
+  border-color: var(--dh-accent);
+  box-shadow: 0 0 14px rgba(255, 47, 208, 0.5);
+}
+
+.dh-send-button {
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid var(--dh-accent);
+  background: linear-gradient(135deg, var(--dh-accent), var(--dh-accent-alt));
+  color: #050008;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, opacity 0.12s;
+}
+
+.dh-send-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 18px rgba(255, 47, 208, 0.7);
+}
+
+.dh-send-button:disabled {
+  opacity: 0.55;
+  cursor: default;
+  box-shadow: none;
+}
+/* Dirt Halo logo pulse */
+.dh-logo-pulse {
+  animation: dh-logo-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes dh-logo-pulse {
+  0% {
+    box-shadow: 0 0 18px rgba(255, 47, 208, 0.5),
+      0 0 0 0 rgba(255, 47, 208, 0.25);
+    transform: translateZ(0) scale(1);
+  }
+  50% {
+    box-shadow: 0 0 32px rgba(255, 47, 208, 0.9),
+      0 0 40px rgba(65, 225, 255, 0.35);
+    transform: translateZ(0) scale(1.03);
+  }
+  100% {
+    box-shadow: 0 0 18px rgba(255, 47, 208, 0.5),
+      0 0 0 0 rgba(255, 47, 208, 0.25);
+    transform: translateZ(0) scale(1);
+  }
+}
+/* Dirt Halo logo pulse glow */
+@keyframes dh-pulse-glow {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+/* === Dirt Halo Synthwave Background Animation === */
+@keyframes dh-synthwave-pan {
+  0% {
+    background-position: 0% 0%;
+  }
+  25% {
+    background-position: 100% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  75% {
+    background-position: 0% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+/* ========== THINKING DOTS ANIMATION ========== */
+
+.dh-thinking-dots {
+  display: inline-block;
+  animation: dh-thinking-dots 1.2s infinite ease-in-out;
+}
+
+@keyframes dh-thinking-dots {
+  0% { opacity: 0.2; }
+  50% { opacity: 1; }
+  100% { opacity: 0.2; }
+}
+/* ===== Dirt Halo "thinking..." dots ===== */
+
+@keyframes dh-thinking-dot {
+  0%, 80%, 100% {
+    transform: scale(0.7);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.dh-thinking-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #ffffff;
+  animation: dh-thinking-dot 1s infinite ease-in-out;
+}
+
+/* stagger the three dots */
+.dh-thinking-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.dh-thinking-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+/* === Thinking... waveform indicator === */
+
+/* The container that wraps the bars + "Thinking..." text */
+.thinking-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+/* The little group of bars (the "waveform") */
+.thinking-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+/* Base style for each bar */
+.thinking-bar {
+  width: 4px;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ff4fd8, #40f4ff);
+  transform-origin: bottom center;
+  animation: thinkingWave 0.8s ease-in-out infinite;
+}
+
+/* Stagger the animation so they don’t move in sync */
+.thinking-bar.bar2 {
+  animation-delay: 0.15s;
+}
+
+.thinking-bar.bar3 {
+  animation-delay: 0.3s;
+}
+
+/* Keyframes for the pulsing waveform */
+@keyframes thinkingWave {
+  0% {
+    transform: scaleY(0.3);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(0.3);
+    opacity: 0.5;
+  }
+}
