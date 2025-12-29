@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-
+import { loadProjects, upsertProject, deleteProject } from "./lib/projectsDB";
 const MODES = [
   { id: "vocals", label: "Vocals" },
   { id: "guitars", label: "Guitars" },
@@ -49,6 +49,7 @@ export default function Home() {
   // =========================
   // STATE
   // =========================
+  
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
 
@@ -90,6 +91,7 @@ const deleteActiveProject = () => {
   setProjects(prev => prev.filter(p => p.id !== activeProjectId));
   setActiveProjectId("");
 };
+const [projectName, setProjectName] = useState("");
   // =========================
   // REFS
   // =========================
@@ -134,7 +136,56 @@ useEffect(() => {
   // =========================
   // EFFECTS (TOP LEVEL ONLY)
   // =========================
+ // ==============================
+// PROJECT LOADING (SINGLE SOURCE)
+// ==============================
 
+// IMPORTANT: make sure you have this import at the top of page.jsx
+// import { loadProjects, upsertProject, deleteProject } from "./lib/projectsDB";
+
+async function refreshProjects() {
+  try {
+    const list = await loadProjects();
+    setProjects(Array.isArray(list) ? list : []);
+  } catch (e) {
+    console.error("refreshProjects failed:", e?.message || e);
+    setProjects([]);
+  }
+}
+
+useEffect(() => {
+  refreshProjects();
+}, []);
+
+useEffect(() => {
+  if (!activeProjectId) return;
+
+  const project = projects.find((p) => String(p.id) === String(activeProjectId));
+  if (!project) return;
+
+  // ✅ Load name
+  setProjectName(project.name || "");
+
+  // ✅ Load chat messages safely
+  setMessages(Array.isArray(project.messages) ? project.messages : (project.messages ? project.messages : []));
+
+  // ✅ Load UI settings
+  if (project.mode) setMode(project.mode);
+  if (project.presetId) setPresetId(project.presetId);
+
+  // ✅ Tone is stored as TEXT (often JSON string). Handle both string + object.
+  if (project.tone) {
+    try {
+      const parsed = typeof project.tone === "string" ? JSON.parse(project.tone) : project.tone;
+      if (parsed && typeof parsed === "object") setTone(parsed);
+    } catch (e) {
+      console.warn("Bad tone JSON in DB:", project.tone);
+    }
+  }
+
+  // ✅ Set mix filename label if present (file itself cannot be restored)
+  if (project.mixFileName != null) setMixFileName(project.mixFileName);
+}, [activeProjectId, projects]);
   // Drive the “Thinking…” animation
   useEffect(() => {
     if (!isThinking) return;
@@ -143,57 +194,6 @@ useEffect(() => {
     }, 180);
     return () => clearInterval(interval);
   }, [isThinking]);
-
-  // Load saved session + projects (once)
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    try {
-      const savedSession = window.localStorage.getItem("dhsa_current_session_v1");
-      if (savedSession) {
-        const data = JSON.parse(savedSession);
-
-        if (data.messages) setMessages(data.messages);
-        if (data.mode) setMode(data.mode);
-        if (data.presetId) setPresetId(data.presetId);
-        if (data.tone) setTone(data.tone);
-
-        // cannot restore actual File object, only filename
-        setMixFile(null);
-        setMixFileName(data.mixFileName || "");
-      }
-
-      const savedProjects = window.localStorage.getItem("dhsa_projects_v1");
-      if (savedProjects) {
-        setProjects(JSON.parse(savedProjects));
-      }
-    } catch (err) {
-      console.error("Error loading saved Dirt Halo session/projects", err);
-    }
-  }, []);
-
-  // Persist current session
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    try {
-      const data = { messages, mode, presetId, tone, mixFileName };
-      window.localStorage.setItem("dhsa_current_session_v1", JSON.stringify(data));
-    } catch (err) {
-      console.error("Error saving Dirt Halo session", err);
-    }
-  }, [messages, mode, presetId, tone, mixFileName]);
-
-  // Persist projects list
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    try {
-      window.localStorage.setItem("dhsa_projects_v1", JSON.stringify(projects));
-    } catch (err) {
-      console.error("Error saving Dirt Halo projects", err);
-    }
-  }, [projects]);
 
   // =========================
   // HANDLERS
@@ -219,38 +219,23 @@ useEffect(() => {
 
   if (s.mixFileName !== undefined) setMixFileName(s.mixFileName);
 };
-  const deleteProject = (projectId) => {
-  const confirmed = window.confirm(
-    "Delete this project? This cannot be undone."
-  );
-  if (!confirmed) return;
+ function handleNewSession() {
+  setMessages([]);
+  setInput("");
+  setMixFile(null);
+  setMixFileName("");
+  setActiveProjectId("");
+  setProjectName("");
 
-  const updatedProjects = projects.filter(p => p.id !== projectId);
-
-  setProjects(updatedProjects);
-  localStorage.setItem("projects", JSON.stringify(updatedProjects));
-
-  // If we deleted the active project, switch safely
-  if (projectId === activeProjectId) {
-    if (updatedProjects.length > 0) {
-      setActiveProjectId(updatedProjects[0].id);
-      setMessages(updatedProjects[0].messages || []);
-    } else {
-      // No projects left → start fresh
-      const newId = crypto.randomUUID();
-      const freshProject = {
-        id: newId,
-        name: "New Project",
-        messages: [],
-      };
-
-      setProjects([freshProject]);
-      setActiveProjectId(newId);
-      setMessages([]);
-      localStorage.setItem("projects", JSON.stringify([freshProject]));
-    }
-  }
-};
+  // set your defaults (use whatever your app expects)
+  setMode("vocals");
+  setPresetId("modern-metalcore");
+  setTone({
+    aggression: "medium",
+    tightness: "medium",
+    brightness: "neutral",
+  });
+}
   function handleFileChange(e) {
     const file = e.target.files?.[0];
     if (!file) {
@@ -265,90 +250,63 @@ useEffect(() => {
   function handleAttachClick() {
     if (fileInputRef.current) fileInputRef.current.click();
   }
+async function handleDeleteActiveProject() {
+  if (!activeProjectId) return;
 
-  function handleSaveProject() {
+  const project = projects.find((p) => String(p.id) === String(activeProjectId));
+  if (!project) return;
+
+  const confirmed = window.confirm(
+    `Delete project "${project.name}"?\n\nThis cannot be undone.`
+  );
+  if (!confirmed) return;
+
   try {
-    const name = window.prompt("Name this project:", "New session");
-    if (!name) return;
-
-    const id = Date.now().toString();
-
-    // ✅ freeze a snapshot so it always loads exactly what you saved
-    const project = {
-      id,
-      name,
-      createdAt: new Date().toISOString(),
-
-      // snapshot data
-      messages: Array.isArray(messages) ? [...messages] : [],
-      mode,
-      presetId,
-      tone: tone ? { ...tone } : null,
-      mixFileName: mixFileName || "",
-    };
-
-    setProjects((prev) => {
-      const next = [...prev, project];
-      localStorage.setItem("projects", JSON.stringify(next)); // ✅ persist
-      return next;
-    });
-
-    setActiveProjectId(id);
-    alert("Project saved!");
-  } catch (err) {
-    console.error("Save project error", err);
-    alert("Couldn't save the project.");
-  }
+  await deleteProject(activeProjectId);
+} catch (err) {
+  console.error("Delete error:", err);
+  alert("Failed to delete project");
+  return;
 }
 
-  function handleLoadProject(id) {
-    if (!id) {
-      setActiveProjectId("");
-      return;
-    }
+  setActiveProjectId("");
+  setMessages([]);
+  // (optional) reset anything else you want here
 
-    const project = projects.find((p) => p.id === id);
-    if (!project) {
-      alert("Project not found.");
-      return;
-    }
+  const fresh = await loadProjects();
+  setProjects(Array.isArray(fresh) ? fresh : []);
+}
+  async function handleSaveProject() {
+  try {
+    const id = activeProjectId || crypto.randomUUID();
 
-    setMessages(project.messages || []);
-    setMode(project.mode || "vocals");
-    setPresetId(project.presetId || "modern-metalcore");
-    setTone(project.tone || tone);
-    setActiveProjectId(project.id);
+    const cleanName =
+      (projectName || mixFileName || "Untitled Project").trim();
 
-    // cannot restore actual File object
-    setMixFile(null);
-    setMixFileName(project.mixFileName || "");
+    const project = {
+      id,
+      name: cleanName,
+      messages,               // ✅ saves chat
+      mode,
+      presetId,               // ✅ camelCase in code
+      tone: JSON.stringify(tone), // ✅ store as text JSON
+      brightness: tone?.brightness ?? null,
+      aggression: tone?.aggression ?? null,
+      tightness: tone?.tightness ?? null,
+      mixFileName: mixFileName || null,
+    };
 
-    alert("Project loaded!");
+    await upsertProject(project);
+
+    // Refresh list + keep selection
+    await refreshProjects();
+    setActiveProjectId(id);
+    setProjectName(cleanName);
+  } catch (err) {
+    console.error("Save error:", err);
+    alert("Failed to save project");
   }
-
-  function handleNewSession() {
-    setMessages([]);
-    setInput("");
-    setMixFile(null);
-    setMixFileName("");
-
-    setMode("vocals");
-    setPresetId("modern-metalcore");
-    setTone({
-      aggression: "medium",
-      tightness: "medium",
-      brightness: "neutral",
-    });
-
-    setActiveProjectId("");
-
-    if (typeof window !== "undefined") {
-      window.localStorage.removeItem("dhsa_current_session_v1");
-    }
-
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  }
-
+}
   async function handleSend() {
     if (!input.trim() && !mixFile) return;
     if (isSending) return;
@@ -950,38 +908,42 @@ const smallClearButtonStyle = {
   New Session
 </button>
 
-  <button
-    type="button"
-    onClick={handleSaveProject}
-    style={smallButtonStyle}
-  >
-    Save as Project
-  </button>
+  <button onClick={handleSaveProject}>
+  {activeProjectId ? "Save Changes" : "Save as Project"}
+</button>
+  <input
+  type="text"
+  value={projectName}
+  onChange={(e) => setProjectName(e.target.value)}
+  placeholder="Project name…"
+  style={{
+    width: 220,
+    padding: "8px 10px",
+    borderRadius: 10,
+    border: "1px solid rgba(255,255,255,0.2)",
+    background: "rgba(0,0,0,0.25)",
+    color: "white",
+    outline: "none",
+  }}
+/>
 
- <select
-  value={activeProjectId ?? ""}
-  onChange={handleProjectChange}
+<select
+  value={activeProjectId}
+  onChange={(e) => setActiveProjectId(e.target.value)}
 >
   <option value="">Current session (unsaved)</option>
 
-  {projects.map((p) => (
+  {(projects ?? []).map((p) => (
     <option key={p.id} value={String(p.id)}>
       {p.name}
     </option>
   ))}
 </select>
+ {(projects ?? []).map((p) => (
+  <option key={p.id} value={p.id}>{p.name}</option>
+))}
 {activeProjectId && (
-  <button
-  onClick={deleteActiveProject}
-  disabled={!activeProjectId}
-  style={{
-    marginLeft: 8,
-    opacity: activeProjectId ? 1 : 0.4,
-    cursor: activeProjectId ? "pointer" : "not-allowed"
-  }}
->
-  Delete Project
-</button>
+  <button onClick={handleDeleteActiveProject}>Delete Project</button>
 )}
 </div>
 {/* CHAT BOX */}
