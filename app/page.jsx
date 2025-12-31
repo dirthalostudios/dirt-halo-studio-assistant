@@ -784,7 +784,7 @@ const smallClearButtonStyle = {
     </div>
 
     <div style={titleBlockStyle}>
-      <div style={titleStyle}>Dirt Halo Studio Assistant</div>
+      <div style={titleStyle}>DH Studio Assistant</div>
       <div style={subtitleStyle}>
         Neon-powered mix engineer for screams, riffs, and heavy records.
       </div>

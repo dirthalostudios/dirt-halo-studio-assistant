@@ -2,7 +2,7 @@ import "./globals.css";
 import type { ReactNode } from "react";
 
 export const metadata = {
-  title: "Dirt Halo Studio Assistant",
+  title: "DH Studio Assistant",
   description:
     "Neon-powered mix engineer for screams, riffs, and heavy records.",
 };
