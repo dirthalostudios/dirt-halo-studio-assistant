@@ -838,7 +838,7 @@ const smallClearButtonStyle = {
         )}
 
         {/* TONE CONTROLS */}
-        <div style={{ display: "flex", gap: 20, marginBottom: 16 }}>
+        <div className="dh-button-row">
           <div style={toneGroupStyle}>
             <span style={labelStyle}>Aggression:</span>
             <div style={toneButtonsRowStyle}>

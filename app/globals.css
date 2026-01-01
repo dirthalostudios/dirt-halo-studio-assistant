@@ -38,11 +38,18 @@ body {
 
 /* Center the app */
 .dh-root {
-  min-height: 100vh;
+  /* iPhone Safari fix: avoid 100vh issues with the dynamic address bar */
+  min-height: 100dvh;
+  min-height: 100svh; /* fallback for some browsers */
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+
+  /* Safe-area padding + a little breathing room */
+  padding: calc(env(safe-area-inset-top) + 16px)
+           calc(env(safe-area-inset-right) + 16px)
+           calc(env(safe-area-inset-bottom) + 16px)
+           calc(env(safe-area-inset-left) + 16px);
 }
 
 /* Main card */
@@ -385,5 +392,46 @@ body {
   100% {
     transform: scaleY(0.3);
     opacity: 0.5;
+  }
+}
+/* --- Mobile responsiveness (portrait iPhone) --- */
+@media (max-width: 600px) {
+  .dh-card {
+    max-width: 100%;
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .dh-header {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  /* Button rows should wrap instead of squishing/overflowing */
+  .dh-mode-row,
+  .dh-preset-row,
+  .dh-options-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}
+/* Shared button row layout */
+.dh-button-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Mobile fixes */
+@media (max-width: 600px) {
+  .dh-button-row {
+    justify-content: center;
+  }
+
+  .dh-button-row button {
+    flex: 1 1 auto;
+    min-width: 110px;
+    max-width: 100%;
   }
 }
