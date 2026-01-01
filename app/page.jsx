@@ -772,7 +772,7 @@ const smallClearButtonStyle = {
     >
       {/* HEADER */}
       <header className="dh-header" style={headerStyle}>
-  <div style={headerLeftStyle}>
+  <div className="dh-header-left" style={headerLeftStyle}>
     <div style={logoWrapperStyle}>
       <div style={logoCircleStyle}>
         <img
@@ -791,7 +791,7 @@ const smallClearButtonStyle = {
     </div>
   </div>
 
-  <div style={headerRightStyle}>
+  <div className="dh-header-right" style={headerRightStyle}>
     <div>Mode: {currentModeLabel}</div>
     <div style={{ opacity: 0.8 }}>Preset: {currentPresetLabel}</div>
   </div>

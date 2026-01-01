@@ -455,6 +455,43 @@ body {
     opacity: 0.9;
   }
 }
+/* Mobile header fix */
+@media (max-width: 520px) {
+  .dh-header {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .dh-header-left {
+    width: 100%;
+  }
+
+  .dh-header-text {
+    min-width: 0; /* allows text to shrink instead of overflowing */
+  }
+
+  .dh-title {
+    font-size: 22px;
+    line-height: 1.1;
+  }
+
+  .dh-subtitle {
+    font-size: 12px;
+    line-height: 1.25;
+    word-break: break-word;
+  }
+
+  .dh-header-right {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    gap: 14px;
+    margin-top: 4px;
+    opacity: 0.85;
+    font-size: 11px;
+  }
+}
 @media (max-width: 520px) {
   /* SESSION TOOLS STACK (mobile) */
   .dh-project-bar {
