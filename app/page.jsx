@@ -771,7 +771,7 @@ const smallClearButtonStyle = {
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* HEADER */}
-      <header style={headerStyle}>
+      <header className="dh-header" style={headerStyle}>
   <div style={headerLeftStyle}>
     <div style={logoWrapperStyle}>
       <div style={logoCircleStyle}>
@@ -783,9 +783,9 @@ const smallClearButtonStyle = {
       </div>
     </div>
 
-    <div style={titleBlockStyle}>
-      <div style={titleStyle}>DH Studio Assistant</div>
-      <div style={subtitleStyle}>
+    <div className="dh-header-text" style={titleBlockStyle}>
+      <div className="dh-title" style={titleStyle}>DH Studio Assistant</div>
+      <div className="dh-subtitle" style={subtitleStyle}>
         Neon-powered mix engineer for screams, riffs, and heavy records.
       </div>
     </div>
@@ -902,49 +902,59 @@ const smallClearButtonStyle = {
   </span>
 
   <button
-  style={newSessionButtonStyle}
-  onClick={handleNewSession}
->
-  New Session
-</button>
+    style={newSessionButtonStyle}
+    onClick={handleNewSession}
+    type="button"
+  >
+    New Session
+  </button>
 
-  <button onClick={handleSaveProject}>
-  {activeProjectId ? "Save Changes" : "Save as Project"}
-</button>
+  <button
+    onClick={handleSaveProject}
+    type="button"
+    className="dh-session-btn"
+  >
+    {activeProjectId ? "Save Changes" : "Save as Project"}
+  </button>
+
   <input
-  type="text"
-  value={projectName}
-  onChange={(e) => setProjectName(e.target.value)}
-  placeholder="Project name…"
-  style={{
-    width: 220,
-    padding: "8px 10px",
-    borderRadius: 10,
-    border: "1px solid rgba(255,255,255,0.2)",
-    background: "rgba(0,0,0,0.25)",
-    color: "white",
-    outline: "none",
-  }}
-/>
+    type="text"
+    value={projectName}
+    onChange={(e) => setProjectName(e.target.value)}
+    placeholder="Project name..."
+    style={{
+      width: 220,
+      padding: "8px 10px",
+      borderRadius: 10,
+      border: "1px solid rgba(255,255,255,0.2)",
+      background: "rgba(0,0,0,0.25)",
+      color: "white",
+      outline: "none",
+    }}
+  />
 
-<select
-  value={activeProjectId}
-  onChange={(e) => setActiveProjectId(e.target.value)}
->
-  <option value="">Current session (unsaved)</option>
+  <select
+    className="dh-project-select"
+    value={activeProjectId}
+    onChange={(e) => setActiveProjectId(e.target.value)}
+  >
+    <option value="">Current session (unsaved)</option>
+    {(projects ?? []).map((p) => (
+      <option key={p.id} value={String(p.id)}>
+        {p.name}
+      </option>
+    ))}
+  </select>
 
-  {(projects ?? []).map((p) => (
-    <option key={p.id} value={String(p.id)}>
-      {p.name}
-    </option>
-  ))}
-</select>
- {(projects ?? []).map((p) => (
-  <option key={p.id} value={p.id}>{p.name}</option>
-))}
-{activeProjectId && (
-  <button onClick={handleDeleteActiveProject}>Delete Project</button>
-)}
+  {activeProjectId && (
+    <button
+      type="button"
+      className="dh-session-btn dh-danger"
+      onClick={handleDeleteActiveProject}
+    >
+      Delete Project
+    </button>
+  )}
 </div>
 {/* CHAT BOX */}
 <div style={chatBoxStyle}>

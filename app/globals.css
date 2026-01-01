@@ -435,3 +435,51 @@ body {
     max-width: 100%;
   }
 }
+@media (max-width: 520px) {
+  .dh-header {
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+
+  .dh-header-text { min-width: 0; }
+
+  .dh-title {
+    font-size: 20px;
+    line-height: 1.15;
+    word-break: break-word;
+  }
+
+  .dh-subtitle {
+    font-size: 12px;
+    line-height: 1.25;
+    opacity: 0.9;
+  }
+}
+@media (max-width: 520px) {
+
+  /* SESSION TOOLS STACK */
+  .dh-session-tools {
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .dh-session-label {
+    width: 100%;
+    margin-bottom: 4px;
+    font-size: 12px;
+  }
+
+  .dh-session-btn {
+    flex: 1 1 auto;
+    min-width: 120px;
+    text-align: center;
+  }
+
+  .dh-project-input,
+  .dh-project-select {
+    width: 100% !important;
+    max-width: 100%;
+  }
+
+}
