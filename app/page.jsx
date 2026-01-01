@@ -896,16 +896,17 @@ const smallClearButtonStyle = {
 
          {/* ASSISTANT CHAT */}
       {/* SESSION TOOLS BAR */}
-<div style={projectBarStyle}>
+<div className="dh-project-bar dh-session-tools" style={projectBarStyle}>
   <span style={{ opacity: 0.85, fontSize: 11, marginRight: 8 }}>
     Session tools:
   </span>
 
   <button
-    style={newSessionButtonStyle}
-    onClick={handleNewSession}
-    type="button"
-  >
+  className="dh-session-btn"
+  style={newSessionButtonStyle}
+  onClick={handleNewSession}
+  type="button"
+>
     New Session
   </button>
 
@@ -918,20 +919,21 @@ const smallClearButtonStyle = {
   </button>
 
   <input
-    type="text"
-    value={projectName}
-    onChange={(e) => setProjectName(e.target.value)}
-    placeholder="Project name..."
-    style={{
-      width: 220,
-      padding: "8px 10px",
-      borderRadius: 10,
-      border: "1px solid rgba(255,255,255,0.2)",
-      background: "rgba(0,0,0,0.25)",
-      color: "white",
-      outline: "none",
-    }}
-  />
+  className="dh-project-input"
+  type="text"
+  value={projectName}
+  onChange={(e) => setProjectName(e.target.value)}
+  placeholder="Project name..."
+  style={{
+    width: 220,
+    padding: "8px 10px",
+    borderRadius: 10,
+    border: "1px solid rgba(255,255,255,0.2)",
+    background: "rgba(0,0,0,0.25)",
+    color: "white",
+    outline: "none",
+  }}
+/>
 
   <select
     className="dh-project-select"

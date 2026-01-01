@@ -456,30 +456,32 @@ body {
   }
 }
 @media (max-width: 520px) {
-
-  /* SESSION TOOLS STACK */
-  .dh-session-tools {
+  /* SESSION TOOLS STACK (mobile) */
+  .dh-project-bar {
     display: flex !important;
     flex-wrap: wrap;
     gap: 10px;
+    align-items: center;
   }
 
-  .dh-session-label {
+  /* "Session tools:" label (your span) */
+  .dh-project-bar > span {
     width: 100%;
     margin-bottom: 4px;
     font-size: 12px;
   }
 
+  /* buttons */
   .dh-session-btn {
-    flex: 1 1 auto;
-    min-width: 120px;
+    flex: 1 1 140px;
+    min-width: 140px;
     text-align: center;
   }
 
+  /* input + select go full width */
   .dh-project-input,
   .dh-project-select {
     width: 100% !important;
-    max-width: 100%;
+    max-width: 100% !important;
   }
-
 }
